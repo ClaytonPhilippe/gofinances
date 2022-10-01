@@ -44,6 +44,7 @@ const AuthContext = createContext({} as IAuthContexData);
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>({} as User);
+  const [userStorageLoading, setUserStorageLoading] = useState(true)
 
   const userStorageKey = '@gofinances:user';
 
