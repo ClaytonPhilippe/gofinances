@@ -21,7 +21,7 @@ import { AppRoutes } from './src/routes/app.routes';
 
 import { SignIn } from './src/screens/SignIn';
 
-import { AuthProvider } from './src/hooks/auth'
+import { AuthProvider, useAuth } from './src/hooks/auth'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -30,8 +30,9 @@ export default function App() {
     Poppins_700Bold
   });
 
+const { userStorageLoading } = useAuth()
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded ||userStorageLoading) {
     return <AppLoading />
   }
 

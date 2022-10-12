@@ -9,11 +9,12 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useForm } from 'react-hook-form';
 
-//2-Importamos o uuid, como não temos um backend, utilizamos para gerar id
+import { useForm } from 'react-hook-form';
+import { useAuth } from '../../hooks/auth';
+
 import uuid from 'react-native-uuid';
-//7-Redirecionar o usuário para a tela de listagem, importamos o hook abaixo
+
 import { useNavigation } from '@react-navigation/native';
 
 import { InputForm } from '../../components/Form/InputForm';
@@ -33,6 +34,7 @@ import {
 
 } from './styles'
 
+
 export type FormData = {
   [name: string]: any;
 }
@@ -48,9 +50,11 @@ const schema = Yup.object().shape({
     .required('O valor é obrigatório')
 })
 
-export function Register({navigation} : {navigation: any}) { //8-Tipando o navigation como parâmetro(Dica dos comentários)
+export function Register({ navigation }: { navigation: any }) { 
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+
+  const { user } = useAuth();
 
   const [category, setCategory] = useState({
     key: 'category',
@@ -58,11 +62,10 @@ export function Register({navigation} : {navigation: any}) { //8-Tipando o navig
   });
 
 
-
   const {
     control,
     handleSubmit,
-    reset, //5 reseta o formulário
+    reset, 
     formState: { errors }
   } = useForm({
     resolver: yupResolver(schema)
@@ -89,9 +92,9 @@ export function Register({navigation} : {navigation: any}) { //8-Tipando o navig
       return Alert.alert('Selecione a categoria');
     }
 
-    //1-Acrescentamos o id:
+    
     const newTransaction = {
-      id: String(uuid.v4()), //3 - uma função que gera o id de forma automatica, consegue ver o id no console!
+      id: String(uuid.v4()), 
       name: form.name,
       amount: form.amount,
       type: transactionType,
@@ -100,7 +103,7 @@ export function Register({navigation} : {navigation: any}) { //8-Tipando o navig
     }
 
     try {
-      const dataKey = '@gofinances:transactions'; 
+      const dataKey = `@gofinances:transactions_user:${user.id}`;
 
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
@@ -112,15 +115,15 @@ export function Register({navigation} : {navigation: any}) { //8-Tipando o navig
 
       await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
 
-      //4-Resetar depois que enviar o cadastro
-      reset(); //6-reseta o formulario
+
+      reset();
       setTransactionType('');
       setCategory({
         key: 'category',
         name: 'Categoria'
       });
-      
-      //9-Depois que resetar os estados, os formulários acima no passo 6, levamos o usuário para a interface Listagem, nome dados em Routes.
+
+
       navigation.navigate('Listagem');
 
 
