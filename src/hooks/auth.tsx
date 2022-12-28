@@ -76,7 +76,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         await AsyncStorage.setItem('@gofinances:user',
           JSON.stringify(userLogged));
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
@@ -105,7 +105,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         await AsyncStorage.setItem('@gofinances:user', JSON.stringify(userLogged));
       }
 
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
